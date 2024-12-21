@@ -1,114 +1,93 @@
 [
-    {
-        "id": "rem-001",
-        "title": "Doctor's appointment",
-        "dueDate": "2024-12-16T08:40:52.483650",
-        "notes": null,
-        "tags": [],
-        "created": "2024-12-03T08:40:52.483650",
-        "updated": "2024-12-13T08:40:52.483650"
-    },
-    {
-        "id": "rem-002",
-        "title": "Project deadline",
-        "dueDate": "2024-12-08T08:40:52.483724",
-        "notes": "Review the details before submitting.",
-        "tags": [
-            "urgent",
-            "work"
-        ],
-        "created": "2024-11-26T08:40:52.483724",
-        "updated": "2024-11-28T08:40:52.483724"
-    },
-    {
-        "id": "rem-003",
-        "title": "Grocery shopping",
-        "dueDate": "2024-12-07T08:40:52.483748",
-        "notes": null,
-        "tags": [
-            "health",
-            "urgent"
-        ],
-        "created": "2024-12-05T08:40:52.483748",
-        "updated": "2024-12-05T08:40:52.483748"
-    },
-    {
-        "id": "rem-004",
-        "title": "Meeting with team",
-        "dueDate": "2024-12-12T08:40:52.483763",
-        "notes": "Prepare agenda beforehand.",
-        "tags": [
-            "personal",
-            "finance",
-            "errands"
-        ],
-        "created": "2024-11-28T08:40:52.483763",
-        "updated": "2024-12-07T08:40:52.483763"
-    },
-    {
-        "id": "rem-005",
-        "title": "Pick up dry cleaning",
-        "dueDate": "2024-12-12T08:40:52.483780",
-        "notes": "Check the status of other clothes too.",
-        "tags": [
-            "health"
-        ],
-        "created": "2024-11-22T08:40:52.483780",
-        "updated": "2024-11-28T08:40:52.483780"
-    },
-    {
-        "id": "rem-006",
-        "title": "Submit tax documents",
-        "dueDate": "2024-11-30T08:40:52.483804",
-        "notes": null,
-        "tags": [],
-        "created": "2024-11-24T08:40:52.483804",
-        "updated": "2024-11-29T08:40:52.483804"
-    },
-    {
-        "id": "rem-007",
-        "title": "Buy birthday gift for Sarah",
-        "dueDate": "2024-12-15T08:40:52.483816",
-        "notes": null,
-        "tags": [
-            "errands"
-        ],
-        "created": "2024-11-24T08:40:52.483816",
-        "updated": "2024-12-01T08:40:52.483816"
-    },
-    {
-        "id": "rem-008",
-        "title": "Call plumber about leak",
-        "dueDate": "2024-12-28T08:40:52.483832",
-        "notes": "Check availability after 3 PM.",
-        "tags": [
-            "work",
-            "health",
-            "urgent"
-        ],
-        "created": "2024-12-08T08:40:52.483832",
-        "updated": "2024-12-13T08:40:52.483832"
-    },
-    {
-        "id": "rem-009",
-        "title": "Prepare presentation slides",
-        "dueDate": "2024-12-11T08:40:52.483855",
-        "notes": null,
-        "tags": [
-            "finance",
-            "errands",
-            "personal"
-        ],
-        "created": "2024-11-21T08:40:52.483855",
-        "updated": "2024-11-27T08:40:52.483855"
-    },
-    {
-        "id": "rem-010",
-        "title": "Yoga class",
-        "dueDate": "2024-12-13T08:40:52.483871",
-        "notes": null,
-        "tags": [],
-        "created": "2024-12-01T08:40:52.483871",
-        "updated": "2024-12-03T08:40:52.483871"
-    }
+  {
+    "id": "rem-001",
+    "title": "Doctor's appointment",
+    "dueDate": "2024-12-16T08:40:52.483650",
+    "notes": null,
+    "tags": [],
+    "created": "2024-12-03T08:40:52.483650",
+    "updated": "2024-12-13T08:40:52.483650"
+  },
+  {
+    "id": "rem-002",
+    "title": "Project deadline",
+    "dueDate": "2024-12-08T08:40:52.483724",
+    "isDone": true,
+    "notes": "Review the details before submitting.",
+    "tags": ["urgent", "work"],
+    "created": "2024-11-26T08:40:52.483724",
+    "updated": "2024-11-28T08:40:52.483724"
+  },
+  {
+    "id": "rem-003",
+    "title": "Grocery shopping",
+    "dueDate": "2024-12-07T08:40:52.483748",
+    "notes": null,
+    "tags": ["health", "urgent"],
+    "created": "2024-12-05T08:40:52.483748",
+    "updated": "2024-12-05T08:40:52.483748"
+  },
+  {
+    "id": "rem-004",
+    "title": "Meeting with team",
+    "dueDate": "2024-12-12T08:40:52.483763",
+    "notes": "Prepare agenda beforehand.",
+    "tags": ["personal", "finance", "errands"],
+    "created": "2024-11-28T08:40:52.483763",
+    "updated": "2024-12-07T08:40:52.483763"
+  },
+  {
+    "id": "rem-005",
+    "title": "Pick up dry cleaning",
+    "dueDate": "2024-12-12T08:40:52.483780",
+    "notes": "Check the status of other clothes too.",
+    "tags": ["health"],
+    "created": "2024-11-22T08:40:52.483780",
+    "updated": "2024-11-28T08:40:52.483780"
+  },
+  {
+    "id": "rem-006",
+    "title": "Submit tax documents",
+    "dueDate": "2024-11-30T08:40:52.483804",
+    "notes": null,
+    "tags": [],
+    "created": "2024-11-24T08:40:52.483804",
+    "updated": "2024-11-29T08:40:52.483804"
+  },
+  {
+    "id": "rem-007",
+    "title": "Buy birthday gift for Sarah",
+    "dueDate": "2024-12-15T08:40:52.483816",
+    "notes": null,
+    "tags": ["errands"],
+    "created": "2024-11-24T08:40:52.483816",
+    "updated": "2024-12-01T08:40:52.483816"
+  },
+  {
+    "id": "rem-008",
+    "title": "Call plumber about leak",
+    "dueDate": "2024-12-28T08:40:52.483832",
+    "notes": "Check availability after 3 PM.",
+    "tags": ["work", "health", "urgent"],
+    "created": "2024-12-08T08:40:52.483832",
+    "updated": "2024-12-13T08:40:52.483832"
+  },
+  {
+    "id": "rem-009",
+    "title": "Prepare presentation slides",
+    "dueDate": "2024-12-11T08:40:52.483855",
+    "notes": null,
+    "tags": ["finance", "errands", "personal"],
+    "created": "2024-11-21T08:40:52.483855",
+    "updated": "2024-11-27T08:40:52.483855"
+  },
+  {
+    "id": "rem-010",
+    "title": "Yoga class",
+    "dueDate": "2024-12-13T08:40:52.483871",
+    "notes": null,
+    "tags": [],
+    "created": "2024-12-01T08:40:52.483871",
+    "updated": "2024-12-03T08:40:52.483871"
+  }
 ]
