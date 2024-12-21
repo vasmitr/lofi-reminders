@@ -1,10 +1,8 @@
 import { proxy } from "valtio";
-import { remindersSlice } from "./reminders";
-
+import remindersSlice from "./reminders";
 
 const state = proxy({
-    ...remindersSlice
-})
-
+  ...remindersSlice,
+});
 
 export default state;

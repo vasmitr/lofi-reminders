@@ -1,4 +1,4 @@
-import { Reminder, remindersSlice } from "@/data/reminders";
+import { Reminder, state } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import { Badge } from "../ui/badge";
@@ -9,7 +9,7 @@ interface ReminderProps {
 
 export default function ReminderCard({ reminder }: ReminderProps) {
   const handleCheck = (reminder: Reminder) => {
-    remindersSlice.toggleIsDone(reminder.id);
+    state.toggleIsDone(reminder.id);
   };
 
   return (
