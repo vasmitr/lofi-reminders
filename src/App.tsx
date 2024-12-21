@@ -3,13 +3,13 @@ import state from "./data/state";
 import ReminderCard from "./components/reminders/card";
 import { ReminderFilter } from "./components/reminders/filter";
 import { Badge } from "./components/ui/badge";
-import { useSnapshot } from "valtio";
 import { filteredRemindersState } from "./data/reminders";
+import { ReminderForm } from "@/components/reminders/form";
 
 function App() {
   const $state = useProxy(state);
 
-  const { filteredReminders: reminders } = useSnapshot(filteredRemindersState);
+  const { filteredReminders: reminders } = useProxy(filteredRemindersState);
 
   return (
     <div>
@@ -26,6 +26,9 @@ function App() {
         {reminders.map((r) => (
           <ReminderCard key={r.id} reminder={r} />
         ))}
+      </div>
+      <div>
+        <ReminderForm />
       </div>
     </div>
   );

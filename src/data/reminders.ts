@@ -39,8 +39,16 @@ export const state = proxy({
   //     const predicate = getFilterPredicate(filter);
   //     return reminders.filter(predicate);
   //   },
-  addReminder(input: Reminder) {
-    state.reminders.push(input);
+  addReminder(input: Pick<Reminder, "title" | "notes" | "dueDate">) {
+    const reminder: Reminder = {
+      ...input,
+      id: crypto.randomUUID(),
+      isDone: false,
+      tags: [],
+      created: new Date().toDateString(),
+      updated: new Date().toDateString(),
+    };
+    state.reminders.push(reminder);
   },
   deleteReminder(id: string) {
     state.reminders = state.reminders.filter((r: Reminder) => r.id !== id);
@@ -76,7 +84,7 @@ function getFilterPredicate<T extends Reminder>(
     case FILTERS.Completed:
       return (r: T) => !!r.isDone;
     default:
-      return (_r: T) => true;
+      return () => true;
   }
 }
 
@@ -87,7 +95,7 @@ export default state;
 export const filteredRemindersState = derive({
   filteredReminders: (get) => {
     const { reminders, filter } = get(state);
-    console.log(filter);
+
     const predicate = getFilterPredicate(filter);
     return reminders.filter(predicate);
   },
