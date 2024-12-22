@@ -1,4 +1,4 @@
-import { addDays, isSameDay, isAfter, isBefore } from "date-fns";
+import { addDays, isSameDay, isAfter, isBefore, subDays } from "date-fns";
 import { proxy, subscribe } from "valtio";
 import { derive } from "derive-valtio";
 
@@ -78,6 +78,7 @@ function getFilterPredicate<T extends Reminder>(
 ): (r: T) => boolean {
   const today = new Date();
   const tomorrow = addDays(today, 1);
+  const yesterday = subDays(today, 1);
 
   switch (filter) {
     case FILTERS.Today:
@@ -87,7 +88,7 @@ function getFilterPredicate<T extends Reminder>(
     case FILTERS.Upcomming:
       return (r: T) => isAfter(new Date(r.dueDate), today) && !r.isDone;
     case FILTERS.Overdue:
-      return (r: T) => isBefore(new Date(r.dueDate), today) && !r.isDone;
+      return (r: T) => isBefore(new Date(r.dueDate), yesterday) && !r.isDone;
     case FILTERS.Completed:
       return (r: T) => !!r.isDone;
     default:
