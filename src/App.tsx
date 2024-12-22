@@ -1,5 +1,5 @@
 import { useProxy } from "valtio/utils";
-import state from "./data/state";
+import state from "./data/reminders";
 import ReminderCard from "./components/reminders/card";
 import { ReminderFilter } from "./components/reminders/filter";
 import { Badge } from "./components/ui/badge";

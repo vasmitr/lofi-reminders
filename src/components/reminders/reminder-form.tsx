@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon, Check } from "lucide-react";
+import { CalendarIcon, Check, X } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useProxy } from "valtio/utils";
@@ -27,7 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-import state from "@/data/state";
+import state from "@/data/reminders";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -41,32 +41,64 @@ const formSchema = z.object({
 
 interface PropTypes {
   onSubmit: () => void;
+  editId?: string;
 }
 
 export function ReminderForm(props: PropTypes) {
   const $state = useProxy(state);
 
+  const reminder = $state.reminders.find((r) => r.id === props.editId);
+
+  const defaultValues = reminder
+    ? {
+        title: reminder.title,
+        notes: reminder.notes || "",
+        dueDate: new Date(reminder.dueDate),
+      }
+    : {
+        title: "",
+        notes: "",
+        dueDate: new Date(),
+      };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      notes: "",
-    },
+    defaultValues,
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    $state.addReminder({ ...values, dueDate: values.dueDate.toDateString() });
+    if (props.editId) {
+      $state.updateReminder({
+        id: props.editId,
+        ...values,
+        dueDate: values.dueDate.toDateString(),
+      });
+    } else {
+      $state.addReminder({ ...values, dueDate: values.dueDate.toDateString() });
+    }
+
     form.reset();
     props.onSubmit();
   }
 
+  function handleCancel(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    $state.setCurrentEdit("");
+  }
+
   return (
-    <Card className="p-4">
+    <Card className={cn("p-4", props.editId && "bg-muted")}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-2"
         >
+          {props.editId && (
+            <Button onClick={handleCancel} variant="ghost" className="self-end">
+              <X />
+            </Button>
+          )}
           <FormField
             control={form.control}
             name="title"
@@ -130,7 +162,7 @@ export function ReminderForm(props: PropTypes) {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -140,7 +172,7 @@ export function ReminderForm(props: PropTypes) {
           />
           <Button className="w-[120px] self-end" type="submit">
             <Check />
-            Add
+            {props.editId ? "Update" : "Add"}
           </Button>
         </form>
       </Form>

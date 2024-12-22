@@ -1,25 +1,36 @@
 import { Trash2 } from "lucide-react";
+import { useProxy } from "valtio/utils";
 import { Reminder, state } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
+import { InlineReminderForm } from "@/components/reminders/inline-reminder-form";
+import { cn } from "@/lib/utils";
 
 interface ReminderProps {
   reminder: Reminder;
 }
 
 export default function ReminderCard({ reminder }: ReminderProps) {
+  const $state = useProxy(state);
   const handleCheck = (reminder: Reminder) => {
-    state.toggleIsDone(reminder.id);
+    $state.toggleIsDone(reminder.id);
   };
 
   const handleRemove = (reminder: Reminder) => {
-    state.deleteReminder(reminder.id);
+    $state.deleteReminder(reminder.id);
+  };
+
+  const handleItemClick = () => {
+    $state.setCurrentEdit(reminder.id);
   };
 
   return (
-    <Card className="rounded-none px-2 py-2">
+    <Card
+      className="rounded-none px-2 py-2 cursor-pointer"
+      onClick={handleItemClick}
+    >
       <CardTitle className="text-xs font-normal text-gray-800 flex justify-between w-full">
         <p>{reminder.title}</p>
         <Button
@@ -51,6 +62,15 @@ export default function ReminderCard({ reminder }: ReminderProps) {
           {new Date(reminder.dueDate).toLocaleDateString()}
         </Badge>
       </CardFooter>
+
+      <div
+        className={cn(
+          "flex w-full",
+          $state.currentEdit === reminder.id ? "visible" : "hidden"
+        )}
+      >
+        <InlineReminderForm editId={reminder.id} />
+      </div>
     </Card>
   );
 }

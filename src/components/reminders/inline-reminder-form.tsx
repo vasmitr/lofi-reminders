@@ -1,5 +1,6 @@
 "use client";
 
+import { useProxy } from "valtio/utils";
 import {
   Accordion,
   AccordionContent,
@@ -7,24 +8,34 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { useState } from "react";
 import { ReminderForm } from "@/components/reminders/reminder-form";
+import { useState, useEffect } from "react";
+import state from "@/data/reminders";
 
-export function InlineReminderForm() {
-  const [open, setOpen] = useState("");
+interface PropTypes {
+  editId?: string;
+}
+
+export function InlineReminderForm({ editId }: PropTypes) {
+  const $state = useProxy(state);
+  const [isOpen, setIsOpen] = useState("");
+
+  useEffect(() => {
+    setIsOpen(editId === $state.currentEdit ? "1" : "");
+  }, [editId, $state.currentEdit]);
 
   return (
     <Accordion
       type="single"
-      value={open}
-      onValueChange={setOpen}
+      value={isOpen}
+      onValueChange={setIsOpen}
       collapsible
-      className="p-2"
+      className="mt-8 p-2 w-full"
     >
-      <AccordionItem value="1">
-        <AccordionTrigger>Add new reminder</AccordionTrigger>
+      <AccordionItem value="1" className="border-none">
+        {!editId && <AccordionTrigger>Add reminder</AccordionTrigger>}
         <AccordionContent>
-          <ReminderForm onSubmit={() => setOpen("")} />
+          <ReminderForm onSubmit={() => setIsOpen("")} editId={editId} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

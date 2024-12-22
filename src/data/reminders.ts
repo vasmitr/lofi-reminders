@@ -33,12 +33,7 @@ if (import.meta.env.VITE_USE_MOCK) {
 export const state = proxy({
   reminders: defaultState,
   filter: FILTERS.Today as Filter,
-  //   get filteredReminders(): Reminder[] {
-  //     const { reminders, filter } = snapshot(state);
-  //     console.log(filter);
-  //     const predicate = getFilterPredicate(filter);
-  //     return reminders.filter(predicate);
-  //   },
+  currentEdit: "",
   addReminder(input: Pick<Reminder, "title" | "notes" | "dueDate">) {
     const reminder: Reminder = {
       ...input,
@@ -63,6 +58,18 @@ export const state = proxy({
   },
   setFilter(filter: Filter) {
     state.filter = filter;
+    state.currentEdit = "";
+  },
+  setCurrentEdit(id: string) {
+    state.currentEdit = id;
+  },
+  updateReminder(input: Partial<Reminder>) {
+    state.reminders = state.reminders.map((r) => {
+      if (r.id === input.id) {
+        r = { ...r, ...input, updated: new Date().toDateString() };
+      }
+      return r;
+    });
   },
 });
 
