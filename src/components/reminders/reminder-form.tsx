@@ -4,15 +4,8 @@ import { format } from "date-fns";
 import { CalendarIcon, Check } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { useProxy } from "valtio/utils";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +28,6 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import state from "@/data/state";
-import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -51,7 +43,7 @@ interface PropTypes {
   onSubmit: () => void;
 }
 
-export function ProfileForm(props: PropTypes) {
+export function ReminderForm(props: PropTypes) {
   const $state = useProxy(state);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -153,26 +145,5 @@ export function ProfileForm(props: PropTypes) {
         </form>
       </Form>
     </Card>
-  );
-}
-
-export function ReminderForm() {
-  const [open, setOpen] = useState("");
-
-  return (
-    <Accordion
-      type="single"
-      value={open}
-      onValueChange={setOpen}
-      collapsible
-      className="p-2"
-    >
-      <AccordionItem value="1">
-        <AccordionTrigger>Add new reminder</AccordionTrigger>
-        <AccordionContent>
-          <ProfileForm onSubmit={() => setOpen("")} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
   );
 }

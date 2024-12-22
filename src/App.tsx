@@ -4,7 +4,7 @@ import ReminderCard from "./components/reminders/card";
 import { ReminderFilter } from "./components/reminders/filter";
 import { Badge } from "./components/ui/badge";
 import { filteredRemindersState } from "./data/reminders";
-import { ReminderForm } from "@/components/reminders/form";
+import { InlineReminderForm } from "@/components/reminders/inline-reminder-form";
 
 function App() {
   const $state = useProxy(state);
@@ -28,7 +28,7 @@ function App() {
         ))}
       </div>
       <div>
-        <ReminderForm />
+        <InlineReminderForm />
       </div>
     </div>
   );
