@@ -15,7 +15,12 @@ export function ReminderFilter({ onChange, value }: PropTypes) {
   };
   return (
     <div className="p-1 bg-slate-50">
-      <ToggleGroup type="single" onValueChange={handleChange} value={value}>
+      <ToggleGroup
+        className="flex xs:flex-wrap sm:flex-nowrap"
+        type="single"
+        onValueChange={handleChange}
+        value={value}
+      >
         {entries.map(([name, value]) => (
           <ToggleGroupItem key={value} value={value}>
             {name}

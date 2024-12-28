@@ -19,24 +19,26 @@ function App() {
 
   return (
     <AuthWrapper>
-      <Card className="max-w-md mx-auto rounded-none bg-blue-100 text-cyan-900 h-[100px] p-4">
-        <CardTitle className=" flex justify-between items-baseline">
-          <div className="flex gap-2 items-center">
-            <h1>Reminders</h1>
-            <Badge className="bg-cyan-900 text-xs">
-              {$state.reminders.length}
-            </Badge>
-          </div>
+      <div className="xs:sticky xs:top-0 xs:shadow-lg md:shadow-none md:static">
+        <Card className="max-w-md mx-auto rounded-none bg-blue-100 text-cyan-900 h-[100px] p-4">
+          <CardTitle className=" flex justify-between items-baseline">
+            <div className="flex gap-2 items-center">
+              <h1>Reminders</h1>
+              <Badge className="bg-cyan-900 text-xs">
+                {$state.reminders.length}
+              </Badge>
+            </div>
 
-          <Logout />
-        </CardTitle>
-      </Card>
-      <Card className="max-w-md mx-auto rounded-none">
-        <ReminderFilter value={$state.filter} onChange={$state.setFilter} />
-      </Card>
-      <Card className="max-w-md mx-auto rounded-none">
-        <InlineReminderForm />
-      </Card>
+            <Logout />
+          </CardTitle>
+        </Card>
+        <Card className="max-w-md mx-auto rounded-none">
+          <ReminderFilter value={$state.filter} onChange={$state.setFilter} />
+        </Card>
+        <Card className="max-w-md mx-auto rounded-none">
+          <InlineReminderForm />
+        </Card>
+      </div>
       <div className="max-w-md mx-auto">
         {reminders.map((r) => (
           <ReminderCard key={r.id} reminder={r} />
