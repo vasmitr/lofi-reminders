@@ -1,7 +1,6 @@
 import { use } from "react";
 
 import LoginButton from "./login";
-import Logout from "./logoout";
 import { VaultContext } from "@/components/auth/context/context";
 
 import { ReactNode } from "react";
@@ -15,14 +14,7 @@ export default function AuthWrapper({ children }: PropTypes) {
 
   return (
     <div className="p-4 space-y-4">
-      {vault?.id ? (
-        <div>
-          <Logout />
-          {children}
-        </div>
-      ) : (
-        <LoginButton />
-      )}
+      {vault?.id ? <div>{children}</div> : <LoginButton />}
     </div>
   );
 }

@@ -15,6 +15,7 @@ export interface Reminder {
 }
 
 export const FILTERS = {
+  All: "all",
   Today: "today",
   Tomorrow: "tomorrow",
   Upcomming: "upcomming",
@@ -22,7 +23,7 @@ export const FILTERS = {
   Overdue: "overdue",
 };
 
-export type Filter = keyof typeof FILTERS | "";
+export type Filter = keyof typeof FILTERS;
 
 let defaultState: Reminder[] = [];
 if (import.meta.env.VITE_USE_MOCK) {
@@ -32,7 +33,7 @@ if (import.meta.env.VITE_USE_MOCK) {
 
 export const state = proxy({
   reminders: defaultState,
-  filter: FILTERS.Today as Filter,
+  filter: FILTERS.All as Filter,
   currentEdit: "",
   addReminder(input: Pick<Reminder, "title" | "notes" | "dueDate">) {
     const reminder: Reminder = {
@@ -91,6 +92,7 @@ function getFilterPredicate<T extends Reminder>(
       return (r: T) => isBefore(new Date(r.dueDate), yesterday) && !r.isDone;
     case FILTERS.Completed:
       return (r: T) => !!r.isDone;
+    case FILTERS.All:
     default:
       return () => true;
   }

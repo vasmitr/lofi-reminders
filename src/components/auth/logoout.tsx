@@ -8,10 +8,12 @@ export default function Logout() {
   const { destroy } = use(VaultContext);
 
   return (
-    <div className="flex justify-end w-full">
-      <Button className="bg-red-600 outline" onClick={destroy}>
-        Lock <Lock />
-      </Button>
-    </div>
+    <Button
+      variant="ghost"
+      className="hover:bg-blue-200 hover:text-cyan-900"
+      onClick={destroy}
+    >
+      Lock <Lock />
+    </Button>
   );
 }

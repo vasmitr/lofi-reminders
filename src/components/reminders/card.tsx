@@ -2,8 +2,6 @@ import { Trash2 } from "lucide-react";
 import { useProxy } from "valtio/utils";
 import { Reminder, state } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
-import { Checkbox } from "../ui/checkbox";
-import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
 import { InlineReminderForm } from "@/components/reminders/inline-reminder-form";
 import { cn } from "@/lib/utils";
@@ -14,7 +12,10 @@ interface ReminderProps {
 
 export default function ReminderCard({ reminder }: ReminderProps) {
   const $state = useProxy(state);
-  const handleCheck = (reminder: Reminder) => {
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     $state.toggleIsDone(reminder.id);
   };
 
@@ -28,39 +29,46 @@ export default function ReminderCard({ reminder }: ReminderProps) {
 
   return (
     <Card
-      className="rounded-none px-2 py-2 cursor-pointer"
+      className="rounded-none px-4 pt-8 pb-4 cursor-pointer border-none shadow-md my-[1px]"
       onClick={handleItemClick}
     >
-      <CardTitle className="text-xs font-normal text-gray-800 flex justify-between w-full">
+      <CardTitle
+        className={cn(
+          "text-sm text-slate-800 font-medium flex justify-between w-full",
+          reminder.isDone && "line-through"
+        )}
+      >
         <p>{reminder.title}</p>
+      </CardTitle>
+      <CardContent
+        className={cn(
+          "mt-1 p-0 text-sm text-slate-600",
+          reminder.isDone && "line-through"
+        )}
+      >
+        <p>{reminder.notes || "Notes"}</p>
+      </CardContent>
+      <CardFooter className="my-4 p-0 flex items-end justify-end gap-4">
         <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8 text-muted-foreground hover:text-red-500"
+          variant="secondary"
+          size="sm"
+          className="w-[100px] text-slate-800"
           onClick={() => handleRemove(reminder)}
         >
-          <Trash2 />
+          <Trash2 /> Remove
         </Button>
-      </CardTitle>
-      <CardContent className="p-0 flex justify-between text-gray-400 text-xs">
-        <p>{reminder.notes || "Notes"}</p>
-        <Checkbox
-          className="mt-2 mr-2"
-          checked={reminder.isDone}
-          onCheckedChange={() => handleCheck(reminder)}
-        />
-      </CardContent>
-      <CardFooter className="mt-4 p-0 flex justify-between text-gray-400 text-xs">
-        <div className="flex gap-1">
-          {reminder.tags?.map((tag) => (
-            <Badge key={tag} className="bg-cyan-800">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        <Badge className="bg-slate-600">
-          {new Date(reminder.dueDate).toLocaleDateString()}
-        </Badge>
+        <Button
+          className={cn(
+            "w-[100px] text-slate-600",
+            reminder.isDone
+              ? "bg-slate-100 hover:bg-slate-200 hover:text-slate-900"
+              : "bg-blue-200 text-cyan-800 hover:bg-blue-300 hover:text-cyan-900"
+          )}
+          size="sm"
+          onClick={handleClick}
+        >
+          {reminder.isDone ? "Undone" : "Done"}
+        </Button>
       </CardFooter>
 
       <div

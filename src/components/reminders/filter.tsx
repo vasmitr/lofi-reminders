@@ -9,10 +9,13 @@ interface PropTypes {
 
 export function ReminderFilter({ onChange, value }: PropTypes) {
   const entries = Object.entries(FILTERS);
+
+  const handleChange = (value: Filter) => {
+    onChange(value || FILTERS.All);
+  };
   return (
-    <div className="p-1">
-      <ToggleGroup type="single" onValueChange={onChange} defaultValue={value}>
-        <ToggleGroupItem value="">All</ToggleGroupItem>
+    <div className="p-1 bg-slate-50">
+      <ToggleGroup type="single" onValueChange={handleChange} value={value}>
         {entries.map(([name, value]) => (
           <ToggleGroupItem key={value} value={value}>
             {name}

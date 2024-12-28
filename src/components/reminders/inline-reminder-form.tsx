@@ -11,6 +11,7 @@ import {
 import { ReminderForm } from "@/components/reminders/reminder-form";
 import { useState, useEffect } from "react";
 import state from "@/data/reminders";
+import { Plus } from "lucide-react";
 
 interface PropTypes {
   editId?: string;
@@ -30,10 +31,14 @@ export function InlineReminderForm({ editId }: PropTypes) {
       value={isOpen}
       onValueChange={setIsOpen}
       collapsible
-      className="mt-8 p-2 w-full"
+      className="w-full"
     >
       <AccordionItem value="1" className="border-none">
-        {!editId && <AccordionTrigger>Add reminder</AccordionTrigger>}
+        {!editId && (
+          <AccordionTrigger className="p-4 text-cyan-800 bg-blue-200 hover:bg-blue-300 hover:text-cyan-900 hover:no-underline">
+            <Plus /> Add reminder
+          </AccordionTrigger>
+        )}
         <AccordionContent>
           <ReminderForm onSubmit={() => setIsOpen("")} editId={editId} />
         </AccordionContent>

@@ -7,6 +7,7 @@ interface VaultContextType {
   eraseIdentity?: () => void;
   vaultID?: string;
   username?: string;
+  loading?: boolean;
 }
 
 export const VaultContext = createContext<VaultContextType>({ vault: null });

@@ -88,28 +88,24 @@ export function ReminderForm(props: PropTypes) {
   }
 
   return (
-    <Card className={cn("p-4", props.editId && "bg-muted")}>
+    <Card
+      className={cn(
+        "rounded-none shadow-none p-8  border-0 bg-slate-50",
+        props.editId && "border-blue-300 border-t-8"
+      )}
+    >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-4"
         >
-          {props.editId && (
-            <Button onClick={handleCancel} variant="ghost" className="self-end">
-              <X />
-            </Button>
-          )}
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    className="border-none"
-                    placeholder="Title"
-                    {...field}
-                  />
+                  <Input placeholder="Title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -122,11 +118,7 @@ export function ReminderForm(props: PropTypes) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Textarea
-                    className="border-none"
-                    placeholder="Notes"
-                    {...field}
-                  />
+                  <Textarea placeholder="Notes" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,9 +134,9 @@ export function ReminderForm(props: PropTypes) {
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        variant={"outline"}
+                        variant="ghost"
                         className={cn(
-                          "w-[120px] pl-3 text-left font-normal self-end",
+                          "w-[120px] pl-3 text-left font-normal self-end border-b-2 border-b-slate-400 rounded-none",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -170,10 +162,19 @@ export function ReminderForm(props: PropTypes) {
               </FormItem>
             )}
           />
-          <Button className="w-[120px] self-end" type="submit">
-            <Check />
-            {props.editId ? "Update" : "Add"}
-          </Button>
+          <div className="mt-4 flex justify-end gap-4">
+            <Button onClick={handleCancel} variant="secondary" className="">
+              <X />
+              Cancel
+            </Button>
+            <Button
+              className="w-[120px] self-end bg-blue-200 text-cyan-800 focus:bg-blue-300 focus:text-cyan-900"
+              type="submit"
+            >
+              <Check />
+              {props.editId ? "Update" : "Add"}
+            </Button>
+          </div>
         </form>
       </Form>
     </Card>

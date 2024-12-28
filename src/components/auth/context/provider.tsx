@@ -1,7 +1,12 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
 import "@lo-fi/local-vault/adapter/idb";
-import { connect, rawStorage, supportsWebAuthn } from "@lo-fi/local-vault";
+import {
+  connect,
+  rawStorage,
+  supportsWebAuthn,
+  removeAll,
+} from "@lo-fi/local-vault";
 import { VaultContext } from "@/components/auth/context/context";
 
 const IDBStore = rawStorage("idb");
@@ -10,6 +15,7 @@ export const VaultProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [vault, setVault] = useState<Vault | null>(null);
   const [vaultID, setVaultID] = useState("");
   const [savedUsername, setUsername] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const getIDBValue = async (key: string) => {
     if (await IDBStore.has(key)) {
@@ -18,24 +24,20 @@ export const VaultProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   const eraseIdentity = async () => {
-    if (await IDBStore.has("vault-id")) {
-      const vaultID = await IDBStore.get("vault-id");
-      await IDBStore.remove("vault-id");
-      await IDBStore.remove("vault-username");
-      await IDBStore.remove("local-vault-" + vaultID);
-      setVaultID("");
-      setUsername("");
-      destroy();
-    }
+    const keys = await IDBStore.keys();
+    await IDBStore.remove.many(keys);
+    await removeAll();
+    location.reload();
   };
 
   useEffect(() => {
-    getIDBValue("vault-id").then((vaultID) => {
-      setVaultID(vaultID);
-    });
-    getIDBValue("vault-username").then((username) => {
-      setUsername(username);
-    });
+    Promise.all([getIDBValue("vault-id"), getIDBValue("vault-username")]).then(
+      ([vaultID, username]) => {
+        setVaultID(vaultID);
+        setUsername(username);
+        setLoading(false);
+      }
+    );
   }, []);
 
   async function setup(username?: string) {
@@ -43,15 +45,15 @@ export const VaultProvider: React.FC<PropsWithChildren> = ({ children }) => {
       throw new Error("no support (");
     }
 
-    let vault;
+    let _vault;
 
     try {
-      vault = await connect({
+      _vault = await connect({
         storageType: "idb",
         addNewVault: !vaultID,
         keyOptions: {
-          username: savedUsername,
-          displayName: savedUsername,
+          username: username || savedUsername,
+          displayName: username || savedUsername,
         },
         vaultID,
       });
@@ -64,14 +66,21 @@ export const VaultProvider: React.FC<PropsWithChildren> = ({ children }) => {
       throw e;
     }
 
-    if (!vaultID) {
-      await IDBStore.set("vault-id", vault?.id);
+    if (!vaultID && _vault?.id) {
+      await IDBStore.set("vault-id", _vault?.id);
+      setVaultID(_vault.id);
       if (username || savedUsername) {
         await IDBStore.set("vault-username", username || savedUsername);
+        setUsername(username || savedUsername);
       }
     }
 
-    setVault(vault);
+    if (!_vault?.id) {
+      alert("No vault ID found");
+      return;
+    }
+
+    setVault(_vault);
   }
 
   function destroy() {
@@ -88,6 +97,7 @@ export const VaultProvider: React.FC<PropsWithChildren> = ({ children }) => {
         eraseIdentity,
         vaultID,
         username: savedUsername,
+        loading,
       }}
     >
       {children}
