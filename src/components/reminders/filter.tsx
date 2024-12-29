@@ -22,7 +22,7 @@ export function ReminderFilter({ onChange, value }: PropTypes) {
         value={value}
       >
         {entries.map(([name, value]) => (
-          <ToggleGroupItem key={value} value={value}>
+          <ToggleGroupItem className="rounded-none" key={value} value={value}>
             {name}
           </ToggleGroupItem>
         ))}
