@@ -8,7 +8,8 @@
     "dev:mock": "VITE_USE_MOCK=true vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start:tunnel": "./start-tunnel.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
