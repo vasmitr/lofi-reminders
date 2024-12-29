@@ -39,7 +39,7 @@ export function InlineReminderForm({ editId }: PropTypes) {
             <Plus /> Add reminder
           </AccordionTrigger>
         )}
-        <AccordionContent>
+        <AccordionContent className="xs:w-full xs:h-screen xs:bg-slate-50 sm:h-auto">
           <ReminderForm onSubmit={() => setIsOpen("")} editId={editId} />
         </AccordionContent>
       </AccordionItem>

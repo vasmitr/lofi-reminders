@@ -90,7 +90,7 @@ export function ReminderForm(props: PropTypes) {
   return (
     <Card
       className={cn(
-        "rounded-none shadow-none p-8  border-0 bg-slate-50",
+        "rounded-none drop-shadow-sm shadow-lg p-8  border-0 bg-slate-50",
         props.editId && "border-blue-300 border-t-8"
       )}
     >
@@ -136,7 +136,8 @@ export function ReminderForm(props: PropTypes) {
                       <Button
                         variant="ghost"
                         className={cn(
-                          "w-[120px] pl-3 text-left font-normal self-end border-b-2 border-b-slate-400 rounded-none",
+                          "w-[120px] pl-3 text-left font-normal self-end border-b-2 border-b-slate-400",
+                          "rounded-none hover:text-secondary-foreground hover:bg-secondary hover:border-b-primary",
                           !field.value && "text-muted-foreground"
                         )}
                       >
@@ -163,12 +164,18 @@ export function ReminderForm(props: PropTypes) {
             )}
           />
           <div className="mt-4 flex justify-end gap-4">
-            <Button onClick={handleCancel} variant="secondary" className="">
+            <Button
+              onClick={handleCancel}
+              variant="secondary"
+              size="lg"
+              className="bg-slate-400 text-white hover:bg-slate-500"
+            >
               <X />
               Cancel
             </Button>
             <Button
-              className="w-[120px] self-end bg-blue-200 text-cyan-800 focus:bg-blue-300 focus:text-cyan-900"
+              size="lg"
+              className="w-[120px] self-end bg-blue-500 text-cyan-50 hover:bg-blue-600"
               type="submit"
             >
               <Check />
