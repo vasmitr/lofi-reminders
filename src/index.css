@@ -63,6 +63,7 @@
   }
   body {
     @apply bg-background text-foreground;
+
     background-color: #ffffff;
     opacity: 0.7;
     background-image: repeating-radial-gradient(
@@ -71,5 +72,6 @@
         #ffffff 14px
       ),
       repeating-linear-gradient(#93c5fd30, #cce3ff1c);
+    height: 100vh;
   }
 }
