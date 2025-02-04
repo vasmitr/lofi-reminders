@@ -1,50 +1,34 @@
-# React + TypeScript + Vite
+## Minimal lo-fi app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Use PWA capabilities and local-vault to operate without the server.
 
-Currently, two official plugins are available:
+### How it works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The reactive state of the app is being persisted into indexedDB by local-vault that provides both local authorization and data encription.
+The whole app state is encrypted with user's passkey stored in device local keychain
+The local assets are being cached via service worker precaching
 
-## Expanding the ESLint configuration
+### Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- `valtio` as a state manager
+- `local-vault` for authorization
+- `vite-pwa-plugin` for precaching assets
+- Shadcn components
 
-- Configure the top-level `parserOptions` property like this:
+### Run
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+For dev mode run
+
+```sh
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The `web-auth-api` and service worker require valid ssl certificate, so for best DX use [cloudflare tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/)
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+npm run start:tunnel
 ```
+
+Now you can open the tunnel url or scan the QR code with your device camera
+
+> Note: You may need to manually remove your passkeys sometimes
