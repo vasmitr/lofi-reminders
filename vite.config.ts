@@ -8,6 +8,17 @@ import LV from "@lo-fi/local-vault/bundlers/vite";
 
 export default defineConfig({
   plugins: [
+    {
+      name: "configure-response-headers",
+      configureServer: (server) => {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+          res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+          next();
+        });
+      },
+    },
+
     LV(),
     tailwindcss(),
     preact({
@@ -32,6 +43,7 @@ export default defineConfig({
   },
 
   optimizeDeps: {
+    exclude: ["sqlocal"],
     esbuildOptions: {
       // WALC (dependency) uses "top-level await", which is ES2022+
       target: "es2022",
