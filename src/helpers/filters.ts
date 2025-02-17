@@ -1,5 +1,5 @@
 import { addDays, isSameDay, isAfter, isBefore, subDays } from "date-fns";
-import { Filter, FILTERS, Reminder } from "@/data/types";
+import { Filter, FILTERS, Reminder } from "../data/types";
 
 export function getFilterPredicate<T extends Reminder>(
   filter: Filter

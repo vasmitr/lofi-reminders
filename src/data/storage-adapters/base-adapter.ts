@@ -1,4 +1,4 @@
-import { Filter, Reminder } from "@/data/types";
+import { Filter, Reminder } from "../types";
 
 export abstract class BaseStoreAdapter {
   abstract getReminders(): Promise<Reminder[]>;

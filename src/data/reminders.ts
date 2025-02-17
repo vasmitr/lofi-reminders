@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid";
 import { computed, signal } from "@preact/signals-react";
-import { BaseStoreAdapter } from "@/data/storage-adapters/base-adapter";
-import { Filter, FILTERS, Reminder } from "@/data/types";
-import { SQLStoreAdapter } from "@/data/storage-adapters/sqlite-adapter";
-import { getFilterPredicate } from "@/helpers/filters";
+import { BaseStoreAdapter } from "./storage-adapters/base-adapter";
+import { SQLStoreAdapter } from "./storage-adapters/sqlite-adapter";
+import { Filter, FILTERS, Reminder } from "./types";
+import { getFilterPredicate } from "../helpers/filters";
 
 class RemindersStoreClass {
   StoreAdapter: BaseStoreAdapter;
