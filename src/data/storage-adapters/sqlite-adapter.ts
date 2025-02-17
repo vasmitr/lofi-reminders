@@ -1,7 +1,7 @@
 import { SQLocalKysely } from "sqlocal/kysely";
 import { Kysely, sql } from "kysely";
-import { Filter, Reminder } from "@/data/types";
-import { BaseStoreAdapter } from "@/data/storage-adapters/base-adapter";
+import { Filter, Reminder } from "../types";
+import { BaseStoreAdapter } from "../storage-adapters/base-adapter";
 
 const { dialect } = new SQLocalKysely("database.sqlite3");
 

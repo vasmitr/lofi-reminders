@@ -17,6 +17,13 @@ export default defineConfig({
           next();
         });
       },
+      configurePreviewServer: (server) => {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+          res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+          next();
+        });
+      },
     },
 
     LV(),
@@ -53,5 +60,9 @@ export default defineConfig({
   build: {
     // WALC (dependency) uses "top-level await", which is ES2022+
     target: "es2022",
+  },
+
+  worker: {
+    format: "es",
   },
 });

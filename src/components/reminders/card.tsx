@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
-import { Reminder, RemindersStore } from "@/data/reminders";
+import { RemindersStore } from "@/data/reminders";
+import { Reminder } from "@/data/types";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
