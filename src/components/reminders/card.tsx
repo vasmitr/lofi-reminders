@@ -1,48 +1,49 @@
 import { Trash2 } from "lucide-react";
-import { useProxy } from "valtio/utils";
-import { Reminder, state } from "@/data/reminders";
+import { Reminder, RemindersStore } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { InlineEditReminderForm } from "@/components/reminders/inline-edit-reminder-form";
-import { useEffect, useState } from "react";
+import { useSignal, useSignalEffect } from "@preact/signals-react";
 
 interface ReminderProps {
   reminder: Reminder;
 }
 
 export default function ReminderCard({ reminder }: ReminderProps) {
-  const $state = useProxy(state);
-  const [isOpen, setIsOpen] = useState("");
+  const isOpen = useSignal("");
+  const { editReminder, deleteReminder, setCurrentEdit, currentEdit } =
+    RemindersStore;
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    $state.toggleIsDone(reminder.id);
+
+    await editReminder({ isDone: !reminder.isDone, id: reminder.id });
   };
 
-  const handleRemove = (reminder: Reminder) => {
-    $state.deleteReminder(reminder.id);
+  const handleRemove = async (reminder: Reminder) => {
+    await deleteReminder(reminder.id);
   };
 
   const toggleOpen = (value: "" | "1") => {
-    setIsOpen(value);
+    isOpen.value = value;
   };
 
-  const handleItemClick = () => {
-    const _isOpen = isOpen === "1" ? "" : "1";
+  const handleItemClick = async () => {
+    const _isOpen = isOpen.peek() === "1" ? "" : "1";
     toggleOpen(_isOpen);
-    $state.setCurrentEdit(_isOpen ? reminder.id : "");
+    await setCurrentEdit(_isOpen ? reminder.id : "");
   };
 
-  useEffect(() => {
-    if ($state.currentEdit !== reminder.id) {
+  useSignalEffect(() => {
+    if (currentEdit.value !== reminder.id) {
       toggleOpen("");
     }
   });
 
   const onClose = async () => {
-    $state.setCurrentEdit("");
+    await setCurrentEdit("");
   };
 
   return (
@@ -92,13 +93,13 @@ export default function ReminderCard({ reminder }: ReminderProps) {
       <div
         className={cn(
           "flex w-full",
-          $state.currentEdit === reminder.id ? "visible" : "hidden"
+          currentEdit.peek() === reminder.id ? "visible" : "hidden"
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <InlineEditReminderForm
           editId={reminder.id}
-          isOpen={isOpen}
+          isOpen={isOpen.value}
           toggleOpen={toggleOpen}
           onClose={onClose}
         />

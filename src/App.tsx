@@ -1,21 +1,38 @@
-import { useProxy } from "valtio/utils";
-import state from "./data/reminders";
 import ReminderCard from "./components/reminders/card";
 import { ReminderFilter } from "./components/reminders/filter";
 import { Badge } from "./components/ui/badge";
-import { filteredRemindersState } from "./data/reminders";
+import { Filter, RemindersStore } from "./data/reminders";
 import { InlineCreateReminderForm } from "@/components/reminders/inline-create-reminder-form";
 import AuthWrapper from "@/components/auth/auth-wrapper";
 
-import useVaultPersistState from "@/components/auth/hooks/use-vault-persist-state";
 import { Card, CardTitle } from "@/components/ui/card";
 import Logout from "@/components/auth/logoout";
+import { useContext, useEffect } from "react";
+import { VaultContext } from "@/components/auth/context/context";
 
 function App() {
-  useVaultPersistState("vault-state", state);
-  const $state = useProxy(state);
+  const { loading } = useContext(VaultContext);
+  const {
+    filteredReminders: reminders,
+    filter,
+    setFilter,
+    init,
+  } = RemindersStore;
 
-  const { filteredReminders: reminders } = useProxy(filteredRemindersState);
+  useEffect(() => {
+    document.onvisibilitychange = init;
+  }, [init]);
+
+  useEffect(() => {
+    async function load() {
+      await init();
+    }
+    load();
+  }, [init, loading]);
+
+  const handleFilterChange = async (filter: Filter) => {
+    await setFilter(filter);
+  };
 
   return (
     <AuthWrapper>
@@ -25,7 +42,7 @@ function App() {
             <div className="flex gap-2 items-center">
               <h1>Reminders</h1>
               <Badge className="bg-cyan-900 text-xs">
-                {$state.reminders.length}
+                {reminders.value.length}
               </Badge>
             </div>
 
@@ -33,14 +50,14 @@ function App() {
           </CardTitle>
         </Card>
         <Card className="max-w-md mx-auto rounded-none">
-          <ReminderFilter value={$state.filter} onChange={$state.setFilter} />
+          <ReminderFilter value={filter.value} onChange={handleFilterChange} />
         </Card>
         <Card className="max-w-md mx-auto rounded-none">
           <InlineCreateReminderForm />
         </Card>
       </div>
       <div className="max-w-md mx-auto">
-        {reminders.map((r) => (
+        {reminders.value.map((r) => (
           <ReminderCard key={r.id} reminder={r} />
         ))}
       </div>

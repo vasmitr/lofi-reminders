@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { CalendarIcon, Check, X } from "lucide-react";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
-import { useProxy } from "valtio/utils";
 import * as v from "valibot";
 
 import { Button } from "@/components/ui/button";
@@ -26,8 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-import state from "@/data/reminders";
+import { RemindersStore } from "@/data/reminders";
 
 const formSchema = v.object({
   title: v.pipe(
@@ -45,9 +43,8 @@ interface PropTypes {
 }
 
 export function ReminderForm(props: PropTypes) {
-  const $state = useProxy(state);
-
-  const reminder = $state.reminders.find((r) => r.id === props.editId);
+  const { selectedReminder } = RemindersStore;
+  const reminder = selectedReminder.value;
 
   const defaultValues = reminder
     ? {
@@ -72,9 +69,9 @@ export function ReminderForm(props: PropTypes) {
       dueDate: values.dueDate.toDateString(),
     };
     if (props.editId) {
-      $state.updateReminder({ ...input, id: props.editId });
+      await RemindersStore.editReminder({ ...input, id: props.editId });
     } else {
-      $state.addReminder(input);
+      await RemindersStore.addReminder(input);
     }
 
     form.reset();

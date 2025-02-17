@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import state from "@/data/reminders";
 
 import {
   Accordion,
@@ -11,25 +10,25 @@ import {
 } from "@/components/ui/accordion";
 
 import { ReminderForm } from "@/components/reminders/reminder-form";
-import { useProxy } from "valtio/utils";
+import { RemindersStore } from "@/data/reminders";
 
 export function InlineCreateReminderForm() {
   const [isOpen, setIsOpen] = useState("");
-  const $state = useProxy(state);
+  const { setCurrentEdit, currentEdit } = RemindersStore;
 
   useEffect(() => {
-    if ($state.currentEdit) {
+    if (currentEdit.value) {
       setIsOpen("");
     }
-  }, [$state.currentEdit]);
+  }, [currentEdit.value]);
 
   const onClose = async () => {
     setIsOpen("");
   };
 
   const handleChange = async (v: string) => {
-    if (v === "1" && $state.currentEdit) {
-      $state.setCurrentEdit("");
+    if (v === "1" && currentEdit.value) {
+      await setCurrentEdit("");
     }
     setIsOpen(v);
   };
