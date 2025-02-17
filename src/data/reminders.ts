@@ -1,203 +1,109 @@
-import { addDays, isSameDay, isAfter, isBefore, subDays } from "date-fns";
 import { v4 as uuid } from "uuid";
 import { computed, signal } from "@preact/signals-react";
+import { BaseStoreAdapter } from "@/data/storage-adapters/base-adapter";
+import { Filter, FILTERS, Reminder } from "@/data/types";
+import { SQLStoreAdapter } from "@/data/storage-adapters/sqlite-adapter";
+import { getFilterPredicate } from "@/helpers/filters";
 
-import { SQLocalKysely } from "sqlocal/kysely";
-import { Kysely, sql } from "kysely";
+class RemindersStoreClass {
+  StoreAdapter: BaseStoreAdapter;
 
-export interface Reminder {
-  id: string;
-  title: string;
-  dueDate: string;
-  isDone?: boolean;
-  notes?: string;
-  tags?: string[];
+  // Signals
+  reminders = signal<Reminder[]>([]);
+  filter = signal<Filter>(FILTERS.All);
+  currentEdit = signal<string | null>(null);
 
-  created: string;
-  updated: string;
-}
-
-export const FILTERS = {
-  All: "all",
-  Today: "today",
-  Tomorrow: "tomorrow",
-  Upcomming: "upcomming",
-  Completed: "completed",
-  Overdue: "overdue",
-};
-
-export type Filter = (typeof FILTERS)[keyof typeof FILTERS];
-
-// Initialize SQLocalKysely and pass the dialect to Kysely
-const { dialect } = new SQLocalKysely("database.sqlite3");
-
-// Define your schema
-// (passed to the Kysely generic above)
-type DB = {
-  reminders: Reminder;
-  filter: {
-    filter: Filter;
-  };
-  currentEdit: {
-    currentEdit: string;
-  };
-};
-
-const db = new Kysely<DB>({ dialect });
-
-await sql`
-CREATE TABLE IF NOT EXISTS reminders (
-  id TEXT PRIMARY KEY,
-  title TEXT,
-  dueDate TEXT,
-  isDone BOOLEAN,
-  notes TEXT,
-  tags TEXT[],
-  created TEXT,
-  updated TEXT
-);
-CREATE TABLE IF NOT EXISTS filter (
-  filter TEXT
-);
-CREATE TABLE IF NOT EXISTS currentEdit (
-  currentEdit TEXT
-);
-
-INSERT INTO "currentEdit" ("currentEdit")
-SELECT ''
-WHERE NOT EXISTS (
-    SELECT 1 FROM "currentEdit"
-);
-
-INSERT INTO "filter" ("filter")
-SELECT 'all'
-WHERE NOT EXISTS (
-    SELECT 1 FROM "filter"
-);
-  `.execute(db);
-
-export default db;
-
-export function createRemindersStore() {
-  const reminders = signal<Reminder[]>([]);
-  const filter = signal<Filter>(FILTERS.All);
-  const currentEdit = signal<string | null>(null);
-
-  const selectedReminder = computed(() => {
-    return reminders.value.find(({ id }) => id === currentEdit.value);
+  // Computed
+  selectedReminder = computed(() => {
+    return this.reminders.value.find(({ id }) => id === this.currentEdit.value);
   });
-  const filteredReminders = computed(() => {
-    const predicate = getFilterPredicate(filter.value);
-    return reminders.value.filter(predicate);
+  filteredReminders = computed(() => {
+    const predicate = getFilterPredicate(this.filter.value);
+    return this.reminders.value.filter(predicate);
   });
 
-  async function init() {
-    await loadReminders();
-    await loadFilter();
-    await loadCurrentEdit();
+  constructor(storeAdapter: BaseStoreAdapter) {
+    this.StoreAdapter = storeAdapter;
+
+    this.init = this.init.bind(this);
+    this.addReminder = this.addReminder.bind(this);
+    this.editReminder = this.editReminder.bind(this);
+    this.deleteReminder = this.deleteReminder.bind(this);
+    this.setCurrentEdit = this.setCurrentEdit.bind(this);
+    this.setFilter = this.setFilter.bind(this);
   }
 
-  async function loadReminders() {
-    const _reminders = await db.selectFrom("reminders").selectAll().execute();
-    reminders.value = _reminders;
+  async init() {
+    const _reminders = await this.StoreAdapter.getReminders();
+    const _filter = await this.StoreAdapter.getFilter();
+    const _currentEdit = await this.StoreAdapter.getCurrentEdit();
+
+    this.reminders.value = _reminders;
+    this.filter.value = _filter;
+    this.currentEdit.value = _currentEdit;
   }
 
-  async function loadFilter() {
-    const _filter = await db
-      .selectFrom("filter")
-      .select("filter")
-      .executeTakeFirst();
-    filter.value = _filter?.filter || FILTERS.All;
+  async addReminder(input: Partial<Reminder>) {
+    const newReminder = {
+      id: uuid(),
+      ...input,
+      created: new Date().toISOString(),
+      isDone: false,
+      updated: new Date().toISOString(),
+    } as Reminder;
+
+    this.reminders.value = [...this.reminders.peek(), newReminder];
+
+    await this.StoreAdapter.addReminder(newReminder);
   }
 
-  async function loadCurrentEdit() {
-    const _currentEdit = await db
-      .selectFrom("currentEdit")
-      .select("currentEdit")
-      .executeTakeFirst();
+  async editReminder(input: Partial<Reminder>) {
+    const update = { ...input, updated: new Date().toISOString() };
 
-    currentEdit.value = _currentEdit?.currentEdit || "";
+    this.reminders.value = this.reminders.peek().map((reminder) => {
+      if (reminder.id === input.id) {
+        return {
+          ...reminder,
+          ...update,
+        };
+      }
+
+      return reminder;
+    });
+
+    await this.StoreAdapter.editReminder(update);
   }
 
-  async function addReminder(input: Partial<Reminder>) {
-    await db
-      .insertInto("reminders")
-      .values({
-        id: uuid(),
-        ...input,
-        created: new Date().toISOString(),
-        isDone: false,
-        updated: new Date().toISOString(),
-      } as Reminder)
-      .execute();
-    await loadReminders();
+  async deleteReminder(id: string) {
+    this.reminders.value = this.reminders
+      .peek()
+      .filter(({ id: _id }) => id !== _id);
+
+    await this.StoreAdapter.deleteReminder(id);
   }
 
-  async function editReminder(input: Partial<Reminder>) {
-    await db
-      .updateTable("reminders")
-      .set({ ...input, updated: new Date().toISOString() })
-      .where("id", "=", input.id as string)
-      .execute();
+  async setFilter(filter: Filter) {
+    this.filter.value = filter;
 
-    await loadReminders();
+    await this.StoreAdapter.setFilter(filter);
   }
 
-  async function deleteReminder(id: string) {
-    db.deleteFrom("reminders").where("id", "=", id).execute();
-    await loadReminders();
-  }
+  async setCurrentEdit(currentEdit: string) {
+    this.currentEdit.value = currentEdit;
 
-  async function setCurrentEdit(_currentEdit: string) {
-    await db
-      .updateTable("currentEdit")
-      .set({ currentEdit: _currentEdit })
-      .executeTakeFirst();
-    await loadCurrentEdit();
-  }
-
-  async function setFilter(_filter: Filter) {
-    await db.updateTable("filter").set({ filter: _filter }).executeTakeFirst();
-    await loadFilter();
-  }
-
-  return {
-    reminders,
-    filteredReminders,
-    filter,
-    currentEdit,
-    selectedReminder,
-    init,
-    addReminder,
-    editReminder,
-    deleteReminder,
-    setCurrentEdit,
-    setFilter,
-  };
-}
-
-export const RemindersStore = createRemindersStore();
-
-function getFilterPredicate<T extends Reminder>(
-  filter: Filter
-): (r: T) => boolean {
-  const today = new Date();
-  const tomorrow = addDays(today, 1);
-  const yesterday = subDays(today, 1);
-
-  switch (filter) {
-    case FILTERS.Today:
-      return (r: T) => isSameDay(new Date(r.dueDate), today) && !r.isDone;
-    case FILTERS.Tomorrow:
-      return (r: T) => isSameDay(new Date(r.dueDate), tomorrow) && !r.isDone;
-    case FILTERS.Upcomming:
-      return (r: T) => isAfter(new Date(r.dueDate), today) && !r.isDone;
-    case FILTERS.Overdue:
-      return (r: T) => isBefore(new Date(r.dueDate), yesterday) && !r.isDone;
-    case FILTERS.Completed:
-      return (r: T) => !!r.isDone;
-    case FILTERS.All:
-    default:
-      return () => true;
+    await this.StoreAdapter.setCurrentEdit(currentEdit);
   }
 }
+
+function remindersStoreFactory(storeAdapter: BaseStoreAdapter) {
+  let instance: RemindersStoreClass | null = null;
+
+  if (instance) {
+    return instance;
+  }
+
+  instance = new RemindersStoreClass(storeAdapter);
+  return instance;
+}
+
+export const RemindersStore = remindersStoreFactory(new SQLStoreAdapter());

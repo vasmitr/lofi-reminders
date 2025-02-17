@@ -1,7 +1,8 @@
 import ReminderCard from "./components/reminders/card";
 import { ReminderFilter } from "./components/reminders/filter";
 import { Badge } from "./components/ui/badge";
-import { Filter, RemindersStore } from "./data/reminders";
+import { RemindersStore } from "./data/reminders";
+import { Filter } from "@/data/types";
 import { InlineCreateReminderForm } from "@/components/reminders/inline-create-reminder-form";
 import AuthWrapper from "@/components/auth/auth-wrapper";
 
