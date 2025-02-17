@@ -52,7 +52,11 @@ export default db;
 
 export class SQLStoreAdapter implements BaseStoreAdapter {
   async getReminders() {
-    return await db.selectFrom("reminders").selectAll().execute();
+    return await db
+      .selectFrom("reminders")
+      .selectAll()
+      .orderBy("created desc")
+      .execute();
   }
 
   async addReminder(input: Reminder) {

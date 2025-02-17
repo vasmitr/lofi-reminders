@@ -52,7 +52,7 @@ class RemindersStoreClass {
       updated: new Date().toISOString(),
     } as Reminder;
 
-    this.reminders.value = [...this.reminders.peek(), newReminder];
+    this.reminders.value = [newReminder, ...this.reminders.peek()];
 
     await this.StoreAdapter.addReminder(newReminder);
   }
