@@ -4,13 +4,13 @@ Use PWA capabilities and local-vault to operate without the server.
 
 ### How it works
 
-The reactive state of the app is being persisted into indexedDB by local-vault that provides both local authorization and data encription.
-The whole app state is encrypted with user's passkey stored in device local keychain
-The local assets are being cached via service worker precaching
+This branch is for playing with wasm SQLite and signals
 
 ### Stack
 
-- `valtio` as a state manager
+- `@preact/react-signals` as a state manager
+- `sqlocal` SQLite on OFPS backend
+- `kysely` For query building
 - `local-vault` for authorization
 - `vite-pwa-plugin` for precaching assets
 - Shadcn components
