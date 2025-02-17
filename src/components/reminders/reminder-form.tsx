@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { CalendarIcon, Check, X } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useProxy } from "valtio/utils";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -26,8 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-import state from "@/data/reminders";
+import { RemindersStore } from "@/data/reminders";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -41,19 +39,19 @@ const formSchema = z.object({
 
 interface PropTypes {
   onSubmit: () => void;
+  onCancel: () => void;
   editId?: string;
 }
 
 export function ReminderForm(props: PropTypes) {
-  const $state = useProxy(state);
-
-  const reminder = $state.reminders.find((r) => r.id === props.editId);
+  const { selectedReminder } = RemindersStore;
+  const reminder = selectedReminder.value;
 
   const defaultValues = reminder
     ? {
         title: reminder.title,
         notes: reminder.notes || "",
-        dueDate: new Date(reminder.dueDate),
+        dueDate: new Date(reminder.dueDate as string),
       }
     : {
         title: "",
@@ -66,25 +64,25 @@ export function ReminderForm(props: PropTypes) {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const input = {
+      ...values,
+      dueDate: values.dueDate.toDateString(),
+    };
     if (props.editId) {
-      $state.updateReminder({
-        id: props.editId,
-        ...values,
-        dueDate: values.dueDate.toDateString(),
-      });
+      await RemindersStore.editReminder({ ...input, id: props.editId });
     } else {
-      $state.addReminder({ ...values, dueDate: values.dueDate.toDateString() });
+      await RemindersStore.addReminder(input);
     }
 
     form.reset();
     props.onSubmit();
   }
 
-  function handleCancel(e: React.MouseEvent) {
+  async function handleCancel(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    $state.setCurrentEdit("");
+    props.onCancel();
   }
 
   return (

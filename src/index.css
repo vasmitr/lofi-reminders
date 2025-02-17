@@ -61,9 +61,7 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-
+  :root {
     background-color: #ffffff;
     opacity: 0.7;
     background-image: repeating-radial-gradient(
@@ -72,6 +70,10 @@
         #ffffff 14px
       ),
       repeating-linear-gradient(#93c5fd30, #cce3ff1c);
-    height: 100vh;
+    height: 100%;
+    min-height: fit-content;
+  }
+  body {
+    @apply text-foreground;
   }
 }

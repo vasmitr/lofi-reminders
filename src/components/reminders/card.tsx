@@ -1,30 +1,30 @@
 import { Trash2 } from "lucide-react";
-import { useProxy } from "valtio/utils";
-import { Reminder, state } from "@/data/reminders";
+import { Reminder, RemindersStore } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
-import { InlineReminderForm } from "@/components/reminders/inline-reminder-form";
 import { cn } from "@/lib/utils";
+import { InlineEditReminderForm } from "@/components/reminders/inline-edit-reminder-form";
 
 interface ReminderProps {
   reminder: Reminder;
 }
 
 export default function ReminderCard({ reminder }: ReminderProps) {
-  const $state = useProxy(state);
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const { editReminder, deleteReminder, setCurrentEdit, currentEdit } =
+    RemindersStore;
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    $state.toggleIsDone(reminder.id);
+
+    await editReminder({ isDone: !reminder.isDone, id: reminder.id });
   };
 
-  const handleRemove = (reminder: Reminder) => {
-    $state.deleteReminder(reminder.id);
+  const handleRemove = async (reminder: Reminder) => {
+    await deleteReminder(reminder.id);
   };
 
   const handleItemClick = () => {
-    $state.setCurrentEdit(reminder.id);
+    setCurrentEdit(reminder.id);
   };
 
   return (
@@ -74,10 +74,10 @@ export default function ReminderCard({ reminder }: ReminderProps) {
       <div
         className={cn(
           "flex w-full",
-          $state.currentEdit === reminder.id ? "visible" : "hidden"
+          currentEdit.value === reminder.id ? "visible" : "hidden"
         )}
       >
-        <InlineReminderForm editId={reminder.id} />
+        <InlineEditReminderForm editId={reminder.id} />
       </div>
     </Card>
   );
