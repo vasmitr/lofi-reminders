@@ -1,4 +1,4 @@
-import { Filter, FILTERS } from "@/data/reminders";
+import { Filter, FILTERS } from "@/data/types";
 
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
