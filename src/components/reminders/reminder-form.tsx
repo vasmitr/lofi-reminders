@@ -82,6 +82,7 @@ export function ReminderForm(props: PropTypes) {
   async function handleCancel(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    form.reset();
     props.onCancel();
   }
 

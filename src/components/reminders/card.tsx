@@ -5,12 +5,14 @@ import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { InlineEditReminderForm } from "@/components/reminders/inline-edit-reminder-form";
+import { useSignal, useSignalEffect } from "@preact/signals-react";
 
 interface ReminderProps {
   reminder: Reminder;
 }
 
 export default function ReminderCard({ reminder }: ReminderProps) {
+  const isOpen = useSignal("");
   const { editReminder, deleteReminder, setCurrentEdit, currentEdit } =
     RemindersStore;
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,8 +26,24 @@ export default function ReminderCard({ reminder }: ReminderProps) {
     await deleteReminder(reminder.id);
   };
 
-  const handleItemClick = () => {
-    setCurrentEdit(reminder.id);
+  const toggleOpen = (value: "" | "1") => {
+    isOpen.value = value;
+  };
+
+  const handleItemClick = async () => {
+    const _isOpen = isOpen.peek() === "1" ? "" : "1";
+    toggleOpen(_isOpen);
+    await setCurrentEdit(_isOpen ? reminder.id : "");
+  };
+
+  useSignalEffect(() => {
+    if (currentEdit.value !== reminder.id) {
+      toggleOpen("");
+    }
+  });
+
+  const onClose = async () => {
+    await setCurrentEdit("");
   };
 
   return (
@@ -75,10 +93,16 @@ export default function ReminderCard({ reminder }: ReminderProps) {
       <div
         className={cn(
           "flex w-full",
-          currentEdit.value === reminder.id ? "visible" : "hidden"
+          currentEdit.peek() === reminder.id ? "visible" : "hidden"
         )}
+        onClick={(e) => e.stopPropagation()}
       >
-        <InlineEditReminderForm editId={reminder.id} />
+        <InlineEditReminderForm
+          editId={reminder.id}
+          isOpen={isOpen.value}
+          toggleOpen={toggleOpen}
+          onClose={onClose}
+        />
       </div>
     </Card>
   );

@@ -54,7 +54,7 @@ class RemindersStoreClass {
 
     this.reminders.value = [newReminder, ...this.reminders.peek()];
 
-    await this.StoreAdapter.addReminder(newReminder);
+    this.StoreAdapter.addReminder(newReminder);
   }
 
   async editReminder(input: Partial<Reminder>) {
@@ -71,7 +71,7 @@ class RemindersStoreClass {
       return reminder;
     });
 
-    await this.StoreAdapter.editReminder(update);
+    this.StoreAdapter.editReminder(update);
   }
 
   async deleteReminder(id: string) {
@@ -79,19 +79,19 @@ class RemindersStoreClass {
       .peek()
       .filter(({ id: _id }) => id !== _id);
 
-    await this.StoreAdapter.deleteReminder(id);
+    this.StoreAdapter.deleteReminder(id);
   }
 
   async setFilter(filter: Filter) {
     this.filter.value = filter;
 
-    await this.StoreAdapter.setFilter(filter);
+    this.StoreAdapter.setFilter(filter);
   }
 
   async setCurrentEdit(currentEdit: string) {
     this.currentEdit.value = currentEdit;
 
-    await this.StoreAdapter.setCurrentEdit(currentEdit);
+    this.StoreAdapter.setCurrentEdit(currentEdit);
   }
 }
 
