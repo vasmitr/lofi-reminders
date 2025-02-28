@@ -1,9 +1,10 @@
 import { v4 as uuid } from "uuid";
 import { computed, signal } from "@preact/signals-react";
 import { BaseStoreAdapter } from "./storage-adapters/base-adapter";
-import { SQLStoreAdapter } from "./storage-adapters/sqlite-adapter";
 import { Filter, FILTERS, Reminder } from "./types";
 import { getFilterPredicate } from "../helpers/filters";
+import { SQLStoreAdapter } from "./storage-adapters/sqlite-adapter";
+import { IDBStoreAdapter } from "./storage-adapters/idb-adapter";
 
 class RemindersStoreClass {
   StoreAdapter: BaseStoreAdapter;
@@ -106,4 +107,39 @@ function remindersStoreFactory(storeAdapter: BaseStoreAdapter) {
   return instance;
 }
 
-export const RemindersStore = remindersStoreFactory(new SQLStoreAdapter());
+let RemindersStore: RemindersStoreClass;
+
+async function isOPFSAvailable() {
+  if (!navigator.storage || !navigator.storage.getDirectory) {
+    return false;
+  }
+
+  try {
+    const root = await navigator.storage.getDirectory();
+    const fileHandle = await root.getFileHandle("test.txt", { create: true });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write("test");
+    await writable.close();
+
+    const file = await fileHandle.getFile();
+    const text = await file.text();
+
+    await root.removeEntry("test.txt");
+
+    return text === "test";
+  } catch (e: unknown) {
+    console.log(e instanceof Error ? e.message : e);
+    return false;
+  }
+}
+
+if (await isOPFSAvailable()) {
+  console.log("Using SQLite");
+  RemindersStore = remindersStoreFactory(new SQLStoreAdapter());
+} else {
+  console.log("Using IndexedDB");
+  RemindersStore = remindersStoreFactory(new IDBStoreAdapter());
+}
+
+export { RemindersStore };
