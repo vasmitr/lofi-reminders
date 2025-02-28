@@ -1,12 +1,12 @@
 import { VaultContext } from "@/components/auth/context/context";
-import { use, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { subscribe } from "valtio";
 
 export default function useVaultPersistState<T extends object>(
   storageKey: string,
   state: T
 ) {
-  const { vault } = use(VaultContext);
+  const { vault } = useContext(VaultContext);
   // const $state = useProxy(state);
 
   useEffect(() => {

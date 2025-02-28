@@ -8,11 +8,11 @@ import AuthWrapper from "@/components/auth/auth-wrapper";
 
 import { Card, CardTitle } from "@/components/ui/card";
 import Logout from "@/components/auth/logoout";
-import { use, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { VaultContext } from "@/components/auth/context/context";
 
 function App() {
-  const { loading } = use(VaultContext);
+  const { loading } = useContext(VaultContext);
   const {
     filteredReminders: reminders,
     filter,

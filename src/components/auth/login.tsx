@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useContext, useState } from "react";
 
 import { VaultContext } from "@/components/auth/context/context";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export default function LoginButton() {
     username: savedUsername,
     vaultID,
     loading,
-  } = use(VaultContext);
+  } = useContext(VaultContext);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);

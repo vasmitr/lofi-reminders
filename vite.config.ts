@@ -1,5 +1,5 @@
 import path from "path";
-import react from "@vitejs/plugin-react";
+import preact from "@preact/preset-vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vite";
 
@@ -26,7 +26,7 @@ export default defineConfig({
     },
 
     LV(),
-    react({
+    preact({
       babel: {
         plugins: [["module:@preact/signals-react-transform"]],
       },
