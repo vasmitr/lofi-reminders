@@ -10,26 +10,43 @@ import { Card, CardTitle } from "@/components/ui/card";
 import Logout from "@/components/auth/logoout";
 import { useContext, useEffect } from "react";
 import { VaultContext } from "@/components/auth/context/context";
+import { isOPFSAvailable } from "@/helpers/opfs";
+
+const {
+  filteredReminders: reminders,
+  filter,
+  setFilter,
+  init,
+} = RemindersStore;
+
+const load = async () => {
+  let adapter;
+  if (await isOPFSAvailable()) {
+    console.log("Using SQLite");
+    const { SQLStoreAdapter } = await import(
+      "./data/storage-adapters/sqlite-adapter"
+    );
+    adapter = new SQLStoreAdapter();
+  } else {
+    const { IDBStoreAdapter } = await import(
+      "./data/storage-adapters/idb-adapter"
+    );
+    console.log("Using IndexedDB");
+    adapter = new IDBStoreAdapter();
+  }
+  await init(adapter);
+};
 
 function App() {
   const { loading } = useContext(VaultContext);
-  const {
-    filteredReminders: reminders,
-    filter,
-    setFilter,
-    init,
-  } = RemindersStore;
 
   useEffect(() => {
-    document.onvisibilitychange = init;
-  }, [init]);
+    document.onvisibilitychange = load;
+  }, []);
 
   useEffect(() => {
-    async function load() {
-      await init();
-    }
     load();
-  }, [init, loading]);
+  }, [loading]);
 
   const handleFilterChange = async (filter: Filter) => {
     await setFilter(filter);

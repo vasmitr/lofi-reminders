@@ -3,11 +3,9 @@ import { computed, signal } from "@preact/signals-react";
 import { BaseStoreAdapter } from "./storage-adapters/base-adapter";
 import { Filter, FILTERS, Reminder } from "./types";
 import { getFilterPredicate } from "../helpers/filters";
-import { SQLStoreAdapter } from "./storage-adapters/sqlite-adapter";
-import { IDBStoreAdapter } from "./storage-adapters/idb-adapter";
 
 class RemindersStoreClass {
-  StoreAdapter: BaseStoreAdapter;
+  StoreAdapter: BaseStoreAdapter | null;
 
   // Signals
   reminders = signal<Reminder[]>([]);
@@ -23,9 +21,8 @@ class RemindersStoreClass {
     return this.reminders.value.filter(predicate);
   });
 
-  constructor(storeAdapter: BaseStoreAdapter) {
-    this.StoreAdapter = storeAdapter;
-
+  constructor() {
+    this.StoreAdapter = null;
     this.init = this.init.bind(this);
     this.addReminder = this.addReminder.bind(this);
     this.editReminder = this.editReminder.bind(this);
@@ -34,7 +31,8 @@ class RemindersStoreClass {
     this.setFilter = this.setFilter.bind(this);
   }
 
-  async init() {
+  async init(storeAdapter: BaseStoreAdapter) {
+    this.StoreAdapter = storeAdapter;
     const _reminders = await this.StoreAdapter.getReminders();
     const _filter = await this.StoreAdapter.getFilter();
     const _currentEdit = await this.StoreAdapter.getCurrentEdit();
@@ -55,7 +53,7 @@ class RemindersStoreClass {
 
     this.reminders.value = [newReminder, ...this.reminders.peek()];
 
-    await this.StoreAdapter.addReminder(newReminder);
+    this.StoreAdapter?.addReminder(newReminder);
   }
 
   async editReminder(input: Partial<Reminder>) {
@@ -72,7 +70,7 @@ class RemindersStoreClass {
       return reminder;
     });
 
-    await this.StoreAdapter.editReminder(update);
+    this.StoreAdapter?.editReminder(update);
   }
 
   async deleteReminder(id: string) {
@@ -80,66 +78,31 @@ class RemindersStoreClass {
       .peek()
       .filter(({ id: _id }) => id !== _id);
 
-    await this.StoreAdapter.deleteReminder(id);
+    this.StoreAdapter?.deleteReminder(id);
   }
 
   async setFilter(filter: Filter) {
     this.filter.value = filter;
 
-    await this.StoreAdapter.setFilter(filter);
+    this.StoreAdapter?.setFilter(filter);
   }
 
   async setCurrentEdit(currentEdit: string) {
     this.currentEdit.value = currentEdit;
 
-    await this.StoreAdapter.setCurrentEdit(currentEdit);
+    this.StoreAdapter?.setCurrentEdit(currentEdit);
   }
 }
 
-function remindersStoreFactory(storeAdapter: BaseStoreAdapter) {
+function remindersStoreFactory() {
   let instance: RemindersStoreClass | null = null;
 
   if (instance) {
     return instance;
   }
 
-  instance = new RemindersStoreClass(storeAdapter);
+  instance = new RemindersStoreClass();
   return instance;
 }
 
-let RemindersStore: RemindersStoreClass;
-
-async function isOPFSAvailable() {
-  if (!navigator.storage || !navigator.storage.getDirectory) {
-    return false;
-  }
-
-  try {
-    const root = await navigator.storage.getDirectory();
-    const fileHandle = await root.getFileHandle("test.txt", { create: true });
-
-    const writable = await fileHandle.createWritable();
-    await writable.write("test");
-    await writable.close();
-
-    const file = await fileHandle.getFile();
-    const text = await file.text();
-
-    await root.removeEntry("test.txt");
-
-    return text === "test";
-  } catch (e: unknown) {
-    console.log(e instanceof Error ? e.message : e);
-    return false;
-  }
-}
-
-if (await isOPFSAvailable()) {
-  console.log("Using SQLite");
-  RemindersStore = remindersStoreFactory(new SQLStoreAdapter());
-} else {
-  console.log("Using IndexedDB");
-  RemindersStore = remindersStoreFactory(new IDBStoreAdapter());
-}
-
-export { RemindersStore };
+export const RemindersStore = remindersStoreFactory();
