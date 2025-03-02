@@ -3,8 +3,8 @@ import { useProxy } from "valtio/utils";
 import { Reminder, state } from "@/data/reminders";
 import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
-import { InlineReminderForm } from "@/components/reminders/inline-reminder-form";
 import { cn } from "@/lib/utils";
+import { InlineEditReminderForm } from "@/components/reminders/inline-edit-reminder-form";
 
 interface ReminderProps {
   reminder: Reminder;
@@ -77,7 +77,7 @@ export default function ReminderCard({ reminder }: ReminderProps) {
           $state.currentEdit === reminder.id ? "visible" : "hidden"
         )}
       >
-        <InlineReminderForm editId={reminder.id} />
+        <InlineEditReminderForm editId={reminder.id} />
       </div>
     </Card>
   );

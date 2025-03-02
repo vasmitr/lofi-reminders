@@ -41,6 +41,7 @@ const formSchema = z.object({
 
 interface PropTypes {
   onSubmit: () => void;
+  onCancel: () => void;
   editId?: string;
 }
 
@@ -53,7 +54,7 @@ export function ReminderForm(props: PropTypes) {
     ? {
         title: reminder.title,
         notes: reminder.notes || "",
-        dueDate: new Date(reminder.dueDate),
+        dueDate: new Date(reminder.dueDate as string),
       }
     : {
         title: "",
@@ -66,25 +67,25 @@ export function ReminderForm(props: PropTypes) {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const input = {
+      ...values,
+      dueDate: values.dueDate.toDateString(),
+    };
     if (props.editId) {
-      $state.updateReminder({
-        id: props.editId,
-        ...values,
-        dueDate: values.dueDate.toDateString(),
-      });
+      $state.updateReminder({ ...input, id: props.editId });
     } else {
-      $state.addReminder({ ...values, dueDate: values.dueDate.toDateString() });
+      $state.addReminder(input);
     }
 
     form.reset();
     props.onSubmit();
   }
 
-  function handleCancel(e: React.MouseEvent) {
+  async function handleCancel(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    $state.setCurrentEdit("");
+    props.onCancel();
   }
 
   return (
