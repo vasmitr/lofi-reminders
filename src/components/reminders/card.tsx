@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { InlineEditReminderForm } from "@/components/reminders/inline-edit-reminder-form";
+import { useEffect, useState } from "react";
 
 interface ReminderProps {
   reminder: Reminder;
@@ -12,6 +13,7 @@ interface ReminderProps {
 
 export default function ReminderCard({ reminder }: ReminderProps) {
   const $state = useProxy(state);
+  const [isOpen, setIsOpen] = useState("");
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -23,8 +25,24 @@ export default function ReminderCard({ reminder }: ReminderProps) {
     $state.deleteReminder(reminder.id);
   };
 
+  const toggleOpen = (value: "" | "1") => {
+    setIsOpen(value);
+  };
+
   const handleItemClick = () => {
-    $state.setCurrentEdit(reminder.id);
+    const _isOpen = isOpen === "1" ? "" : "1";
+    toggleOpen(_isOpen);
+    $state.setCurrentEdit(_isOpen ? reminder.id : "");
+  };
+
+  useEffect(() => {
+    if ($state.currentEdit !== reminder.id) {
+      toggleOpen("");
+    }
+  });
+
+  const onClose = async () => {
+    $state.setCurrentEdit("");
   };
 
   return (
@@ -76,8 +94,14 @@ export default function ReminderCard({ reminder }: ReminderProps) {
           "flex w-full",
           $state.currentEdit === reminder.id ? "visible" : "hidden"
         )}
+        onClick={(e) => e.stopPropagation()}
       >
-        <InlineEditReminderForm editId={reminder.id} />
+        <InlineEditReminderForm
+          editId={reminder.id}
+          isOpen={isOpen}
+          toggleOpen={toggleOpen}
+          onClose={onClose}
+        />
       </div>
     </Card>
   );

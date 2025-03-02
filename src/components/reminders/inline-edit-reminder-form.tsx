@@ -7,31 +7,25 @@ import {
 } from "@/components/ui/accordion";
 
 import { ReminderForm } from "@/components/reminders/reminder-form";
-import { useState, useEffect } from "react";
-import state from "@/data/reminders";
-import { useProxy } from "valtio/utils";
 
 interface PropTypes {
   editId: string;
+  isOpen: string;
+  toggleOpen: (value: "" | "1") => void;
+  onClose: () => void;
 }
 
-export function InlineEditReminderForm({ editId }: PropTypes) {
-  const [isOpen, setIsOpen] = useState("");
-  const $state = useProxy(state);
-
-  useEffect(() => {
-    setIsOpen($state.currentEdit === editId ? "1" : "");
-  }, [$state.currentEdit, editId, setIsOpen]);
-
-  const onClose = async () => {
-    $state.setCurrentEdit("");
-  };
-
+export function InlineEditReminderForm({
+  editId,
+  isOpen,
+  toggleOpen,
+  onClose,
+}: PropTypes) {
   return (
     <Accordion
       type="single"
       value={isOpen}
-      onValueChange={setIsOpen}
+      onValueChange={toggleOpen}
       collapsible
       className="w-full"
     >
