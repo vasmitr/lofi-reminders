@@ -91,7 +91,7 @@ export function ReminderForm(props: PropTypes) {
   return (
     <Card
       className={cn(
-        "rounded-none drop-shadow-sm shadow-lg p-8  border-0 bg-slate-50",
+        "rounded-none drop-shadow-xs shadow-lg p-8  border-0 bg-slate-50",
         props.editId && "border-blue-300 border-t-8"
       )}
     >
