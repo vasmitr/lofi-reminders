@@ -2,10 +2,10 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, Check, X } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import { useProxy } from "valtio/utils";
-import { z } from "zod";
+import * as v from "valibot";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,14 +29,13 @@ import { cn } from "@/lib/utils";
 
 import state from "@/data/reminders";
 
-const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "Title is required",
-  }),
-  notes: z.string(),
-  dueDate: z.date({
-    message: "Due Date is required",
-  }),
+const formSchema = v.object({
+  title: v.pipe(
+    v.string("Title is required"),
+    v.minLength(3, "Title must be at least 3 characters")
+  ),
+  notes: v.pipe(v.string(), v.nonEmpty("Notes is required")),
+  dueDate: v.date("Due Date is required"),
 });
 
 interface PropTypes {
@@ -62,12 +61,12 @@ export function ReminderForm(props: PropTypes) {
         dueDate: new Date(),
       };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<v.InferOutput<typeof formSchema>>({
+    resolver: valibotResolver(formSchema),
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: v.InferOutput<typeof formSchema>) {
     const input = {
       ...values,
       dueDate: values.dueDate.toDateString(),
