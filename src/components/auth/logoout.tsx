@@ -1,11 +1,11 @@
 import { Lock } from "lucide-react";
-import { use } from "react";
+import { useContext } from "react";
 
 import { VaultContext } from "@/components/auth/context/context";
 import { Button } from "@/components/ui/button";
 
 export default function Logout() {
-  const { destroy } = use(VaultContext);
+  const { destroy } = useContext(VaultContext);
 
   return (
     <Button

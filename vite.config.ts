@@ -1,5 +1,5 @@
 import path from "path";
-import react from "@vitejs/plugin-react-swc";
+import preact from "@preact/preset-vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vite";
 
@@ -8,7 +8,11 @@ import LV from "@lo-fi/local-vault/bundlers/vite";
 export default defineConfig({
   plugins: [
     LV(),
-    react(),
+    preact({
+      babel: {
+        plugins: [["module:@preact/signals-react-transform"]],
+      },
+    }),
     VitePWA({
       registerType: "autoUpdate",
       workbox: {

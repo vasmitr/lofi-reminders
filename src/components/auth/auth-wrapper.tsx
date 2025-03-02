@@ -1,4 +1,4 @@
-import { use } from "react";
+import { useContext } from "react";
 
 import LoginButton from "./login";
 import { VaultContext } from "@/components/auth/context/context";
@@ -10,7 +10,7 @@ interface PropTypes {
 }
 
 export default function AuthWrapper({ children }: PropTypes) {
-  const { vault } = use(VaultContext);
+  const { vault } = useContext(VaultContext);
 
   return (
     <div className="">
